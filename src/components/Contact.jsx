@@ -79,10 +79,10 @@ const Contact = ({ darkMode }) => {
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-full ${
-                  darkMode ? 'bg-gray-700' : 'bg-blue-100'
+                  darkMode ? 'bg-black' : 'bg-white'
                 }`}>
                   <Mail className={`h-6 w-6 ${
-                    darkMode ? 'text-blue-400' : 'text-blue-600'
+                    darkMode ? 'text-yellow-700' : 'text-black'
                   }`} />
                 </div>
                 <div>
@@ -101,10 +101,10 @@ const Contact = ({ darkMode }) => {
 
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-full ${
-                  darkMode ? 'bg-gray-700' : 'bg-green-100'
+                  darkMode ? 'bg-black' : 'bg-white'
                 }`}>
                   <Phone className={`h-6 w-6 ${
-                    darkMode ? 'text-green-400' : 'text-green-600'
+                    darkMode ? 'text-yellow-700' : 'text-black'
                   }`} />
                 </div>
                 <div>
@@ -123,10 +123,10 @@ const Contact = ({ darkMode }) => {
 
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-full ${
-                  darkMode ? 'bg-gray-700' : 'bg-purple-100'
+                  darkMode ? 'bg-black' : 'bg-white'
                 }`}>
                   <MapPin className={`h-6 w-6 ${
-                    darkMode ? 'text-purple-400' : 'text-purple-600'
+                    darkMode ? 'text-yellow-700' : 'text-black'
                   }`} />
                 </div>
                 <div>
@@ -145,7 +145,7 @@ const Contact = ({ darkMode }) => {
             </div>
 
             <div className="mt-8">
-              <h4 className={`font-semibold mb-4 ${
+              <h4 className={`font-bold text-xl mb-4 ${
                 darkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 Response Time
@@ -165,7 +165,7 @@ const Contact = ({ darkMode }) => {
           }`}>
             {isSubmitted ? (
               <div className="text-center py-8">
-                <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                <CheckCircle className="h-16 w-16 text-black mx-auto mb-4" />
                 <h3 className={`text-2xl font-bold mb-2 ${
                   darkMode ? 'text-white' : 'text-gray-900'
                 }`}>
@@ -182,7 +182,7 @@ const Contact = ({ darkMode }) => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className={`block text-sm font-medium mb-2 ${
-                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                      darkMode ? 'text-gray-300' : 'text-black'
                     }`}>
                       Name *
                     </label>
@@ -203,7 +203,7 @@ const Contact = ({ darkMode }) => {
                   </div>
                   <div>
                     <label htmlFor="email" className={`block text-sm font-medium mb-2 ${
-                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                      darkMode ? 'text-gray-300' : 'text-black'
                     }`}>
                       Email *
                     </label>
@@ -226,7 +226,7 @@ const Contact = ({ darkMode }) => {
 
                 <div>
                   <label htmlFor="subject" className={`block text-sm font-medium mb-2 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                    darkMode ? 'text-gray-300' : 'text-black'
                   }`}>
                     Subject *
                   </label>
@@ -248,7 +248,7 @@ const Contact = ({ darkMode }) => {
 
                 <div>
                   <label htmlFor="message" className={`block text-sm font-medium mb-2 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                    darkMode ? 'text-gray-300' : 'text-black'
                   }`}>
                     Message *
                   </label>
@@ -271,7 +271,7 @@ const Contact = ({ darkMode }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full px-8 py-3 bg-black text-white font-semibold rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 ${
+                  className={`w-full px-8 py-3 bg-black text-white font-semibold rounded-lg transition-all duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 ${
                     darkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'
                   }`}
                 >

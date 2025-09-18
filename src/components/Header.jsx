@@ -58,7 +58,7 @@ const Header = ({
               onClick={toggleDarkMode}
               className={`p-2 rounded-lg transition-colors ${
                 darkMode 
-                  ? 'bg-black hover:bg-gray-700 text-yellow-400' 
+                  ? 'bg-black hover:bg-yellow-900 text-yellow-400' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
               }`}
             >

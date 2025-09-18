@@ -186,4 +186,54 @@ export const photos = [
     location: 'Bhongir, Telangana',
      
   },
+  {
+    id: '30',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20230518140632.jpg?updatedAt=1758186751882',
+    title: 'LocoBros',
+    location: 'Wadi Junction, Karnataka',
+     
+  },
+
+  {
+    id: '31',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20240514164207.jpg?updatedAt=1758186701406',
+    title: 'Mystery Clouds',
+    location: 'Gadwal, Telangana',
+     
+  },
+  {
+    id: '32',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20220515180808.jpg?updatedAt=1758186701090',
+    title: 'Straight Iron ',
+    location: 'Mahabubnagar Railway Station, Telangana',
+     
+  },
+  {
+    id: '33',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20240114183335.jpg?updatedAt=1758186701101',
+    title: 'Ghosted Vruksh',
+    location: 'Osmania Medical College, Hyderabad',
+     
+  },
+  {
+    id: '34',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20220327014551.jpg?updatedAt=1758186700685',
+    title: 'Life Lessons',
+    location: 'Ghatkesar Railway Station, Telangana',
+     
+  },
+  {
+    id: '35',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20230111195521.jpg?updatedAt=1758186700092',
+    title: 'Larger Platforms',
+    location: 'CSMT, Mumbai',
+     
+  },
+  {
+    id: '35',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG-20241003-WA0004.jpg?updatedAt=1758186697318',
+    title: 'The Lord',
+    location: 'Swarnagiri, Telangana',
+     
+  },
 ];

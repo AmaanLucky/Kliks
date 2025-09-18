@@ -80,7 +80,7 @@ function App() {
       <section className="relative pt-20 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className={`text-5xl md:text-7xl pt-10 font-bold mb-6 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            darkMode ? 'text-white' : 'text-black'
           }`}>
             Welcome to
             <span className="block bg-gradient-to-r from-black to-black bg-clip-text text-transparent">
