@@ -17,11 +17,10 @@ const Header = ({
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      darkMode ? 'bg-gray-900/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
+      darkMode ? 'bg-yellow-900/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
     } shadow-md`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <div className="flex items-center space-x-2">
             <Camera className={`h-8 w-8 ${darkMode ? 'text-white' : 'text-gray-900'}`} />
             <span className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -29,39 +28,37 @@ const Header = ({
             </span>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <button
               onClick={() => scrollToSection('gallery')}
-              className={`transition-colors hover:text-blue-600 ${
-                darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700'
+              className={`transition-colors  ${
+                darkMode ? 'text-gray-300 hover:text-black' : 'text-gray-700 hover:text-black'
               }`}
             >
               Gallery
             </button>
             <button
               onClick={() => scrollToSection('about')}
-              className={`transition-colors hover:text-blue-600 ${
-                darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700'
+              className={`transition-colors ${
+                darkMode ? 'text-gray-300 hover:text-black' : 'text-gray-700 hover:text-black'
               }`}
             >
               About
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className={`transition-colors hover:text-blue-600 ${
-                darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700'
+              className={`transition-colors ${
+                darkMode ? 'text-gray-300 hover:text-black' : 'text-gray-700 hover:text-black'
               }`}
             >
               Contact
             </button>
             
-            {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
               className={`p-2 rounded-lg transition-colors ${
                 darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                  ? 'bg-black hover:bg-gray-700 text-yellow-400' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
               }`}
             >
@@ -69,13 +66,12 @@ const Header = ({
             </button>
           </nav>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <button
               onClick={toggleDarkMode}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-colors duration-500 ${
                 darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                  ? 'bg-black hover:bg-white text-yellow-400' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
               }`}
             >
@@ -92,16 +88,15 @@ const Header = ({
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className={`md:hidden absolute top-16 left-0 right-0 transition-all duration-300 ${
-            darkMode ? 'bg-gray-900/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
+            darkMode ? 'bg-yellow-900/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
           } shadow-lg`}>
             <nav className="px-4 py-4 space-y-4">
               <button
                 onClick={() => scrollToSection('gallery')}
-                className={`block w-full text-left py-2 transition-colors hover:text-blue-600 ${
-                  darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700'
+                className={`block w-full text-left py-2 transition-colors hover:text-black ${
+                  darkMode ? 'text-gray-300 hover:text-black' : 'text-gray-700'
                 }`}
               >
                 Gallery

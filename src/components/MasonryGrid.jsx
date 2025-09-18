@@ -4,8 +4,8 @@ import PhotoCard from './PhotoCard';
 const MasonryGrid = ({ 
   photos, 
   onPhotoClick, 
-  onLike, 
-  likedPhotos, 
+  // onLike, 
+  // likedPhotos, 
   darkMode 
 }) => {
   const [columns, setColumns] = useState(4);
@@ -55,8 +55,8 @@ const MasonryGrid = ({
                 key={photo.id}
                 photo={photo}
                 onPhotoClick={onPhotoClick}
-                onLike={onLike}
-                isLiked={likedPhotos.has(photo.id)}
+                // onLike={onLike}
+                // isLiked={likedPhotos.has(photo.id)}
                 darkMode={darkMode}
               />
             ))}

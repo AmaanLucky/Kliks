@@ -14,15 +14,6 @@ function App() {
   const [likedPhotos, setLikedPhotos] = useLocalStorage('likedPhotos', []);
   const [photosWithLikes, setPhotosWithLikes] = useState(photos);
 
-  // Update photos with current like counts
-  useEffect(() => {
-    const likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
-    const updatedPhotos = photos.map(photo => ({
-      ...photo,
-      likes: photo.likes + (likeCounts[photo.id] || 0)
-    }));
-    setPhotosWithLikes(updatedPhotos);
-  }, [likedPhotos]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -50,22 +41,6 @@ function App() {
     setSelectedPhoto(photosWithLikes[previousIndex]);
   };
 
-  const handleLike = (photoId) => {
-    const isLiked = likedPhotos.includes(photoId);
-    const likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
-    
-    if (isLiked) {
-      // Remove like
-      setLikedPhotos(likedPhotos.filter(id => id !== photoId));
-      likeCounts[photoId] = (likeCounts[photoId] || 0) - 1;
-    } else {
-      // Add like
-      setLikedPhotos([...likedPhotos, photoId]);
-      likeCounts[photoId] = (likeCounts[photoId] || 0) + 1;
-    }
-    
-    localStorage.setItem('likeCounts', JSON.stringify(likeCounts));
-  };
 
   const getCurrentPhotoIndex = () => {
     if (!selectedPhoto) return -1;
@@ -75,7 +50,6 @@ function App() {
   const hasNext = getCurrentPhotoIndex() < photosWithLikes.length - 1;
   const hasPrevious = getCurrentPhotoIndex() > 0;
 
-  // Apply dark mode to document
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -86,9 +60,8 @@ function App() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${
-      darkMode ? 'bg-gray-900' : 'bg-white'
+      darkMode ? 'bg-yellow-900' : 'bg-white'
     }`}>
-      {/* Background Pattern */}
       <div
   className={`
     fixed inset-0 opacity-5 
@@ -98,22 +71,19 @@ function App() {
     bg-[length:60px_60px]
   `}
 />
-
-
       <Header darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
       />
 
-      {/* Hero Section */}
       <section className="relative pt-20 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className={`text-5xl md:text-7xl pt-10 font-bold mb-6 ${
             darkMode ? 'text-white' : 'text-gray-900'
           }`}>
             Welcome to
-            <span className="block bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-black to-black bg-clip-text text-transparent">
               Kliks
             </span>
           </h1>
@@ -124,16 +94,15 @@ function App() {
           </p>
           <button
             onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
-            className="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="inline-flex items-center px-8 py-3 bg-black text-white font-semibold rounded-full hover:bg-gray-950 transition-colors duration-500 shadow-xl hover:shadow-xl transform hover:scale-105"
           >
             Explore Gallery
           </button>
         </div>
       </section>
 
-      {/* Gallery Section */}
       <section id="gallery" className={`py-20 transition-colors duration-300 ${
-        darkMode ? 'bg-gray-900' : 'bg-white'
+        darkMode ? 'bg-yellow-900' : 'bg-white'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -147,14 +116,12 @@ function App() {
             }`}>
               A collection of nature's most stunning moments
             </p>
-            <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            <div className="w-20 h-1 bg-black mx-auto rounded-full mt-4"></div>
           </div>
 
           <MasonryGrid
             photos={photosWithLikes}
             onPhotoClick={handlePhotoClick}
-            onLike={handleLike}
-            likedPhotos={new Set(likedPhotos)}
             darkMode={darkMode}
           />
         </div>
@@ -163,31 +130,17 @@ function App() {
       <About darkMode={darkMode} />
       <Contact darkMode={darkMode} />
 
-      {/* Lightbox */}
       <Lightbox
         photo={selectedPhoto}
         onClose={handleCloseLightbox}
         onNext={handleNextPhoto}
         onPrevious={handlePreviousPhoto}
-        onLike={handleLike}
         isLiked={selectedPhoto ? likedPhotos.includes(selectedPhoto.id) : false}
         darkMode={darkMode}
         hasNext={hasNext}
         hasPrevious={hasPrevious}
       />
 
-      {/* Footer */}
-      {/* <footer className={`py-8 transition-colors duration-300 ${
-        darkMode ? 'bg-gray-900 border-gray-700' : 'bg-gray-50 border-gray-200'
-      } border-t`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className={`${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            © 2025 NatureCapture. Capturing beauty, preserving memories.
-          </p>
-        </div>
-      </footer> */}
     </div>
   );
 }

@@ -6,8 +6,6 @@ const Lightbox = ({
   onClose,
   onNext,
   onPrevious,
-  onLike,
-  isLiked,
   darkMode,
   hasNext,
   hasPrevious,
@@ -50,13 +48,13 @@ const Lightbox = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-yellow-900 bg-opacity-90 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
       >
         <X className="h-6 w-6" />
       </button>
@@ -65,7 +63,7 @@ const Lightbox = ({
       {hasPrevious && (
         <button
           onClick={onPrevious}
-          className="absolute left-6 z-10 p-3 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+          className="absolute left-6 z-10 p-3 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
         >
           <ChevronLeft className="h-8 w-8" />
         </button>
@@ -74,7 +72,7 @@ const Lightbox = ({
       {hasNext && (
         <button
           onClick={onNext}
-          className="absolute right-6 z-10 p-3 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+          className="absolute right-6 z-10 p-3 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
         >
           <ChevronRight className="h-8 w-8" />
         </button>
@@ -100,24 +98,8 @@ const Lightbox = ({
               <MapPin className="h-4 w-4" />
               <span>{photo.location}</span>
             </div>
-            {/* <div className="flex items-center space-x-1">
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current text-red-500' : ''}`} />
-              <span>{photo.likes} likes</span>
-            </div> */}
           </div>
           
-          {/* Like Button */}
-          {/* <button
-            onClick={() => onLike(photo.id)}
-            className={`inline-flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 ${
-              isLiked 
-                ? 'bg-red-500 text-white hover:bg-red-600' 
-                : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
-            } backdrop-blur-sm`}
-          >
-            <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-            <span>{isLiked ? 'Liked' : 'Like'}</span>
-          </button> */}
         </div>
       </div>
     </div>

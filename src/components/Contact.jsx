@@ -25,15 +25,15 @@ const Contact = ({ darkMode }) => {
 
   try {
     await emailjs.send(
-      'service_herfqvr',     // Replace with your EmailJS service ID
-      'template_oj8gvmj',    // Replace with your EmailJS template ID
+      'service_herfqvr',    
+      'template_oj8gvmj',   
       {
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
       },
-      'GW3FyIAi55zfoJRE2'      // Replace with your EmailJS public key
+      'GW3FyIAi55zfoJRE2'   
     );
 
     setIsSubmitting(false);
@@ -50,21 +50,21 @@ const Contact = ({ darkMode }) => {
 
   return (
     <section id="contact" className={`py-20 transition-colors duration-300 ${
-      darkMode ? 'bg-gray-900' : 'bg-white'
+      darkMode ? 'bg-yellow-900' : 'bg-white'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className={`text-4xl font-bold mb-4 ${
             darkMode ? 'text-white' : 'text-gray-900'
           }`}>
-            Get In Touch
+                Get In Touch
           </h2>
           <p className={`text-xl ${
             darkMode ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            Let's discuss your photography needs or collaborations
+                Let's discuss your photography needs or collaborations
           </p>
-          <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+          <div className="w-20 h-1 bg-black mx-auto rounded-full mt-4"></div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -73,7 +73,7 @@ const Contact = ({ darkMode }) => {
             <h3 className={`text-2xl font-bold mb-8 ${
               darkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              Let's Connect
+                  Let's Connect
             </h3>
             
             <div className="space-y-6">
@@ -161,7 +161,7 @@ const Contact = ({ darkMode }) => {
 
           {/* Contact Form */}
           <div className={`p-8 rounded-2xl z-0 ${
-            darkMode ? 'bg-gray-900 ring-1 ring-gray-700' : 'bg-gray-400'
+            darkMode ? 'bg-yellow-900 ring-1 ring-black' : 'bg-gray-400'
           }`}>
             {isSubmitted ? (
               <div className="text-center py-8">
@@ -195,7 +195,7 @@ const Contact = ({ darkMode }) => {
                       onChange={handleChange}
                       className={`w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         darkMode 
-                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                          ? 'bg-white border-gray-600 text-black placeholder-black' 
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                       }`}
                       placeholder="Your name"
@@ -216,7 +216,7 @@ const Contact = ({ darkMode }) => {
                       onChange={handleChange}
                       className={`w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         darkMode 
-                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                          ? 'bg-white border-gray-600 text-black placeholder-black' 
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                       }`}
                       placeholder="your@email.com"
@@ -239,7 +239,7 @@ const Contact = ({ darkMode }) => {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                        ? 'bg-white border-gray-600 text-black placeholder-black' 
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                     }`}
                     placeholder="What's this about?"
@@ -261,7 +261,7 @@ const Contact = ({ darkMode }) => {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                       darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                        ? 'bg-white border-gray-600 text-black placeholder-black' 
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                     }`}
                     placeholder="Tell me about your project or inquiry..."
@@ -271,7 +271,7 @@ const Contact = ({ darkMode }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 ${
+                  className={`w-full px-8 py-3 bg-black text-white font-semibold rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 ${
                     darkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'
                   }`}
                 >
