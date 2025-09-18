@@ -236,4 +236,10 @@ export const photos = [
     location: 'Swarnagiri, Telangana',
      
   },
+  {
+    id: '35',
+    src: 'https://ik.imagekit.io/AmaanAhmed/KliksImages/IMG20220729154649.jpg?updatedAt=1758192592422',
+    title: 'Looks like a painting',
+    location: 'Srisailam, Andhra Pradesh',
+  },
 ];
