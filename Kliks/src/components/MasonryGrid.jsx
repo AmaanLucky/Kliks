@@ -7,17 +7,17 @@ const MasonryGrid = ({ photos, loading, onPhotoClick, darkMode, slowLoad }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1280)      setColumns(4);
+      if (window.innerWidth >= 1280) setColumns(4);
       else if (window.innerWidth >= 1024) setColumns(3);
-      else if (window.innerWidth >= 768)  setColumns(2);
-      else                                setColumns(1);
+      else if (window.innerWidth >= 768) setColumns(2);
+      else setColumns(1);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const gridClass = {1:'grid-cols-1', 2:'grid-cols-2', 3:'grid-cols-3', 4:'grid-cols-4'}[columns];
+  const gridClass = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4' }[columns];
   const skeletonCount = columns * 3;
 
   if (loading) {
@@ -29,8 +29,7 @@ const MasonryGrid = ({ photos, loading, onPhotoClick, darkMode, slowLoad }) => {
       <div className="w-full">
         {slowLoad && (
           <p className={`text-center text-sm mb-6 animate-pulse ${darkMode ? 'text-yellow-200' : 'text-gray-400'}`}>
-            Server is waking up, hang tight…
-          </p>
+            One moment… greatness takes a second to load ✨          </p>
         )}
         <div className={`grid gap-4 ${gridClass}`}>
           {skeletonCols.map((col, ci) => (
