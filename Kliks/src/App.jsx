@@ -15,6 +15,7 @@ function Gallery({ darkMode }) {
   const [page, setPage]         = useState(1);
   const [hasMore, setHasMore]   = useState(true);
   const [fetchError, setFetchError] = useState(false);
+  const [slowLoad, setSlowLoad] = useState(false);
 
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [likedPhotos]                     = useLocalStorage('likedPhotos', []);
@@ -22,6 +23,7 @@ function Gallery({ darkMode }) {
   const loadPage = useCallback(async (p) => {
     setLoading(true);
     setFetchError(false);
+    const slowTimer = p === 1 ? setTimeout(() => setSlowLoad(true), 5000) : null;
     try {
       const data = await getImages(p);
       if (data.error) throw new Error(data.error);
@@ -30,6 +32,8 @@ function Gallery({ darkMode }) {
     } catch {
       setFetchError(true);
     } finally {
+      clearTimeout(slowTimer);
+      setSlowLoad(false);
       setLoading(false);
     }
   }, []);
@@ -109,6 +113,7 @@ function Gallery({ darkMode }) {
                 loading={loading && page === 1}
                 onPhotoClick={setSelectedPhoto}
                 darkMode={darkMode}
+                slowLoad={slowLoad}
               />
 
               {!loading && hasMore && (

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PhotoCard from './PhotoCard';
 import SkeletonCard from './SkeletonCard';
 
-const SKELETON_COUNT = 8;
-
-const MasonryGrid = ({ photos, loading, onPhotoClick, darkMode }) => {
+const MasonryGrid = ({ photos, loading, onPhotoClick, darkMode, slowLoad }) => {
   const [columns, setColumns] = useState(4);
 
   useEffect(() => {
@@ -20,18 +18,24 @@ const MasonryGrid = ({ photos, loading, onPhotoClick, darkMode }) => {
   }, []);
 
   const gridClass = {1:'grid-cols-1', 2:'grid-cols-2', 3:'grid-cols-3', 4:'grid-cols-4'}[columns];
+  const skeletonCount = columns * 3;
 
   if (loading) {
     const skeletonCols = Array.from({ length: columns }, () => []);
-    Array.from({ length: SKELETON_COUNT }).forEach((_, i) => {
+    Array.from({ length: skeletonCount }).forEach((_, i) => {
       skeletonCols[i % columns].push(i);
     });
     return (
       <div className="w-full">
+        {slowLoad && (
+          <p className={`text-center text-sm mb-6 animate-pulse ${darkMode ? 'text-yellow-200' : 'text-gray-400'}`}>
+            Server is waking up, hang tight…
+          </p>
+        )}
         <div className={`grid gap-4 ${gridClass}`}>
           {skeletonCols.map((col, ci) => (
             <div key={ci} className="flex flex-col gap-4">
-              {col.map(i => <SkeletonCard key={i} darkMode={darkMode} />)}
+              {col.map(i => <SkeletonCard key={i} index={i} darkMode={darkMode} />)}
             </div>
           ))}
         </div>
