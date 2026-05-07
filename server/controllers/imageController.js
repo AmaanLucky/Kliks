@@ -29,6 +29,7 @@ exports.login = (req, res) => {
 
 // POST /api/auth/forgot-password — send OTP
 exports.forgotPassword = async (req, res) => {
+  otpStore.clear(); // invalidate any previous OTPs
   const otp = generateOtp();
   otpStore.set(otp, Date.now() + 10 * 60 * 1000); // expires in 10 min
 
