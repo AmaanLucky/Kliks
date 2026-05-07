@@ -29,7 +29,7 @@ exports.forgotPassword = async (req, res) => {
   console.log('forgotPassword: GMAIL_USER=', process.env.GMAIL_USER, 'ADMIN_EMAIL=', process.env.ADMIN_EMAIL);
   try {
     const info = await mailer.sendMail({
-      from: `"Kliks Admin" <${process.env.GMAIL_USER}>`,
+      from: 'Kliks Admin <onboarding@resend.dev>',
       to:   process.env.ADMIN_EMAIL,
       subject: 'Kliks Admin — Your Password',
       html: `
