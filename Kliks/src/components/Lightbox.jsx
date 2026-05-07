@@ -48,13 +48,13 @@ const Lightbox = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-yellow-900 bg-opacity-90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white bg-opacity-50 text-black hover:bg-opacity-70 transition-all duration-200"
       >
         <X className="h-6 w-6" />
       </button>
@@ -63,7 +63,7 @@ const Lightbox = ({
       {hasPrevious && (
         <button
           onClick={onPrevious}
-          className="absolute left-6 z-10 p-3 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+          className="absolute left-6 z-10 p-3 rounded-full bg-white bg-opacity-50 text-black hover:bg-opacity-70 transition-all duration-200"
         >
           <ChevronLeft className="h-8 w-8" />
         </button>
@@ -72,7 +72,7 @@ const Lightbox = ({
       {hasNext && (
         <button
           onClick={onNext}
-          className="absolute right-6 z-10 p-3 rounded-full bg-yellow-900 bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200"
+          className="absolute right-6 z-10 p-3 rounded-full bg-white bg-opacity-50 text-black hover:bg-opacity-70 transition-all duration-200"
         >
           <ChevronRight className="h-8 w-8" />
         </button>

@@ -12,7 +12,7 @@ const PhotoCard = ({ photo, onPhotoClick, darkMode }) => {
     >
       {!loaded && (
         <div
-          className={`absolute inset-0 animate-pulse ${darkMode ? 'bg-yellow-950' : 'bg-gray-200'}`}
+          className={`absolute inset-0 animate-pulse ${darkMode ? 'bg-yellow-950' : 'bg-black'}`}
           style={{ paddingBottom: '75%' }}
         />
       )}
@@ -29,7 +29,7 @@ const PhotoCard = ({ photo, onPhotoClick, darkMode }) => {
         />
       </div>
 
-      <div className="absolute inset-0 bg-yellow-900 bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-end">
+      <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-end">
         <div className="w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <h3 className="text-white font-semibold text-lg">{photo.title}</h3>
         </div>
