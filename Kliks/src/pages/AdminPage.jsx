@@ -198,43 +198,15 @@ const AdminPage = ({ darkMode }) => {
             </button>
 
             <div className="text-center pt-1">
-              {!otpSent ? (
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  disabled={forgotLoading}
-                  className={`text-sm underline underline-offset-2 transition-opacity disabled:opacity-50 ${sub}`}
-                >
-                  {forgotLoading ? 'Sending OTP…' : 'Forgot Password?'}
-                </button>
-              ) : (
-                <div className="flex flex-col gap-2 mt-1">
-                  <input
-                    type="text"
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
-                    value={otp}
-                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                    className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-colors text-center tracking-widest font-bold ${input}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleVerifyOtp}
-                    disabled={otpLoading || otp.length !== 6}
-                    className="w-full py-2.5 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
-                  >
-                    {otpLoading ? 'Verifying…' : 'Verify OTP'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setOtpSent(false); setOtp(''); setForgotMsg(null); }}
-                    className={`text-xs underline underline-offset-2 ${sub}`}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-              {forgotMsg && (
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={forgotLoading}
+                className={`text-sm underline underline-offset-2 transition-opacity disabled:opacity-50 ${sub}`}
+              >
+                {forgotLoading ? 'Sending OTP…' : 'Forgot Password?'}
+              </button>
+              {forgotMsg && !otpSent && (
                 <p className={`text-xs mt-2 flex items-center justify-center gap-1 ${
                   forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
                 }`}>
@@ -248,6 +220,63 @@ const AdminPage = ({ darkMode }) => {
             </div>
           </form>
         </div>
+
+        {/* ─── OTP Modal ─────────────────────────────────────────────────────── */}
+        {otpSent && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+          >
+            <div className={`w-full max-w-xs rounded-2xl border shadow-2xl p-8 ${card}`}>
+              <div className="flex flex-col items-center gap-1 mb-6">
+                <Camera className={`h-8 w-8 ${text}`} />
+                <h2 className={`text-lg font-bold ${text}`}>Enter OTP</h2>
+                <p className={`text-xs text-center ${sub}`}>A 6-digit code was sent to your registered email. It expires in 10 minutes.</p>
+              </div>
+
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="— — — — — —"
+                  maxLength={6}
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                  autoFocus
+                  className={`w-full px-4 py-3 rounded-lg border text-lg outline-none transition-colors text-center tracking-[0.5em] font-bold ${input}`}
+                />
+
+                {forgotMsg && (
+                  <p className={`text-xs flex items-center justify-center gap-1 ${
+                    forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {forgotMsg.type === 'success'
+                      ? <CheckCircle className="h-3 w-3 flex-shrink-0" />
+                      : <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                    }
+                    {forgotMsg.text}
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleVerifyOtp}
+                  disabled={otpLoading || otp.length !== 6}
+                  className="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
+                >
+                  {otpLoading ? <><Loader className="h-4 w-4 animate-spin inline mr-1" />Verifying…</> : 'Verify OTP'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setOtpSent(false); setOtp(''); setForgotMsg(null); }}
+                  className={`w-full text-xs py-1 underline underline-offset-2 ${sub}`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
