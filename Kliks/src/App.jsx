@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Header from './components/Header';
 import MasonryGrid from './components/MasonryGrid';
 import Lightbox from './components/Lightbox';
@@ -62,6 +63,13 @@ function Gallery({ darkMode }) {
 
   return (
     <>
+      <Helmet>
+        <title>Kliks — Nature Photography Portfolio</title>
+        <meta name="description" content="Browse a curated collection of nature photography — mountains, greenery, and breathtaking moments captured through passion and patience." />
+        <meta property="og:title" content="Kliks — Nature Photography Portfolio" />
+        <meta property="og:url" content="https://kliks.onrender.com/" />
+      </Helmet>
+
       <section className="relative pt-20 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className={`text-5xl md:text-7xl pt-10 font-bold mb-6 ${darkMode ? 'text-white' : 'text-black'}`}>
