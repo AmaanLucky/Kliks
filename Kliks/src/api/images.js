@@ -25,3 +25,10 @@ export const deleteImage = (id, token) =>
 
 export const forgotPassword = () =>
   fetch(`${BASE}/api/auth/forgot-password`, { method: 'POST' }).then(r => r.json());
+
+export const verifyOtp = (otp) =>
+  fetch(`${BASE}/api/auth/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ otp }),
+  }).then(r => r.json());

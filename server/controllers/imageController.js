@@ -4,11 +4,15 @@ const Image = require('../models/Image');
 const imagekit = require('../utils/imagekit');
 const mailer = require('../utils/mailer');
 
-// multer: store in memory so we can pass buffer to ImageKit
 const upload = multer({ storage: multer.memoryStorage() });
 exports.upload = upload.single('image');
 
 const PAGE_SIZE = 20;
+
+// In-memory OTP store: { otp -> expiresAt }
+const otpStore = new Map();
+
+const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 // POST /api/auth/login
 exports.login = (req, res) => {
@@ -23,31 +27,68 @@ exports.login = (req, res) => {
   res.json({ token });
 };
 
-// POST /api/auth/forgot-password
+// POST /api/auth/forgot-password — send OTP
 exports.forgotPassword = async (req, res) => {
-  const successMsg = { message: 'Password sent to your registered email.' };
-  console.log('forgotPassword: GMAIL_USER=', process.env.GMAIL_USER, 'ADMIN_EMAIL=', process.env.ADMIN_EMAIL);
+  const otp = generateOtp();
+  otpStore.set(otp, Date.now() + 10 * 60 * 1000); // expires in 10 min
+
   try {
-    const info = await mailer.sendMail({
+    await mailer.sendMail({
       from: 'Kliks Admin <onboarding@resend.dev>',
-      to:   process.env.ADMIN_EMAIL,
-      subject: 'Kliks Admin — Your Password',
+      to: process.env.ADMIN_EMAIL,
+      subject: 'Kliks Admin — Your OTP',
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:auto;">
           <h2 style="margin-bottom:8px;">Kliks Admin</h2>
-          <p style="color:#555;">You requested your admin password. Here it is:</p>
-          <div style="background:#f4f4f4;padding:16px 20px;border-radius:8px;font-size:20px;letter-spacing:2px;font-weight:bold;margin:16px 0;">
-            ${process.env.ADMIN_PASSWORD}
+          <p style="color:#555;">Use this OTP to retrieve your password. It expires in 10 minutes.</p>
+          <div style="background:#f4f4f4;padding:16px 20px;border-radius:8px;font-size:32px;letter-spacing:8px;font-weight:bold;margin:16px 0;text-align:center;">
+            ${otp}
           </div>
           <p style="color:#999;font-size:12px;">If you didn't request this, ignore this email.</p>
         </div>
       `,
     });
-    console.log('Email sent:', info.messageId, 'accepted:', info.accepted);
+    res.json({ message: 'OTP sent to your registered email.' });
   } catch (err) {
-    console.error('Forgot-password email failed:', err.message);
+    console.error('OTP email failed:', err.message);
+    res.status(500).json({ error: 'Failed to send OTP. Try again.' });
   }
-  res.json(successMsg);
+};
+
+// POST /api/auth/verify-otp — verify OTP and email the password
+exports.verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  if (!otp) return res.status(400).json({ error: 'OTP is required.' });
+
+  const expiresAt = otpStore.get(otp);
+  if (!expiresAt || Date.now() > expiresAt) {
+    otpStore.delete(otp);
+    return res.status(400).json({ error: 'Invalid or expired OTP.' });
+  }
+
+  otpStore.delete(otp); // one-time use
+
+  try {
+    await mailer.sendMail({
+      from: 'Kliks Admin <onboarding@resend.dev>',
+      to: process.env.ADMIN_EMAIL,
+      subject: 'Kliks Admin — Your Password',
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;">
+          <h2 style="margin-bottom:8px;">Kliks Admin</h2>
+          <p style="color:#555;">OTP verified. Here is your admin password:</p>
+          <div style="background:#f4f4f4;padding:16px 20px;border-radius:8px;font-size:20px;letter-spacing:2px;font-weight:bold;margin:16px 0;">
+            ${process.env.ADMIN_PASSWORD}
+          </div>
+          <p style="color:#999;font-size:12px;">Keep this safe.</p>
+        </div>
+      `,
+    });
+    res.json({ message: 'Password sent to your registered email.' });
+  } catch (err) {
+    console.error('Password email failed:', err.message);
+    res.status(500).json({ error: 'OTP verified but failed to send password email.' });
+  }
 };
 
 // GET /api/images?page=1
@@ -110,7 +151,6 @@ exports.deleteImage = async (req, res) => {
     try {
       await imagekit.deleteFile(doc.fileId);
     } catch (err) {
-      // log but don't block deletion from DB if ImageKit file is already gone
       console.error('ImageKit delete failed:', err.message);
     }
   }

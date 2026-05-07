@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Upload, Trash2, LogOut, LogIn, CheckCircle, AlertCircle, Loader, X } from 'lucide-react';
-import { login, uploadImage, deleteImage, getImages, forgotPassword } from '../api/images';
+import { login, uploadImage, deleteImage, getImages, forgotPassword, verifyOtp } from '../api/images';
 
 const TOKEN_KEY = 'kliks_admin_token';
 
@@ -9,8 +9,11 @@ const AdminPage = ({ darkMode }) => {
   const [password, setPassword]         = useState('');
   const [loginError, setLoginError]     = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
-  const [forgotMsg, setForgotMsg]       = useState(null); // { type: 'success'|'error', text }
+  const [forgotMsg, setForgotMsg]         = useState(null); // { type: 'success'|'error', text }
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [otpSent, setOtpSent]             = useState(false);
+  const [otp, setOtp]                     = useState('');
+  const [otpLoading, setOtpLoading]       = useState(false);
 
   const [title, setTitle]         = useState('');
   const [file, setFile]           = useState(null);
@@ -67,12 +70,36 @@ const AdminPage = ({ darkMode }) => {
     setForgotMsg(null);
     setForgotLoading(true);
     try {
-      await forgotPassword();
-      setForgotMsg({ type: 'success', text: 'Password sent to your registered email.' });
+      const data = await forgotPassword();
+      if (data.error) {
+        setForgotMsg({ type: 'error', text: data.error });
+      } else {
+        setOtpSent(true);
+        setForgotMsg({ type: 'success', text: 'OTP sent to your registered email.' });
+      }
     } catch {
-      setForgotMsg({ type: 'error', text: 'Failed to send. Is the server running?' });
+      setForgotMsg({ type: 'error', text: 'Failed to send OTP. Is the server running?' });
     } finally {
       setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setForgotMsg(null);
+    setOtpLoading(true);
+    try {
+      const data = await verifyOtp(otp);
+      if (data.error) {
+        setForgotMsg({ type: 'error', text: data.error });
+      } else {
+        setOtpSent(false);
+        setOtp('');
+        setForgotMsg({ type: 'success', text: 'Password sent to your email.' });
+      }
+    } catch {
+      setForgotMsg({ type: 'error', text: 'Verification failed. Try again.' });
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -171,14 +198,42 @@ const AdminPage = ({ darkMode }) => {
             </button>
 
             <div className="text-center pt-1">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                disabled={forgotLoading}
-                className={`text-sm underline underline-offset-2 transition-opacity disabled:opacity-50 ${sub}`}
-              >
-                {forgotLoading ? 'Sending…' : 'Forgot Password?'}
-              </button>
+              {!otpSent ? (
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={forgotLoading}
+                  className={`text-sm underline underline-offset-2 transition-opacity disabled:opacity-50 ${sub}`}
+                >
+                  {forgotLoading ? 'Sending OTP…' : 'Forgot Password?'}
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2 mt-1">
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    value={otp}
+                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-colors text-center tracking-widest font-bold ${input}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleVerifyOtp}
+                    disabled={otpLoading || otp.length !== 6}
+                    className="w-full py-2.5 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
+                  >
+                    {otpLoading ? 'Verifying…' : 'Verify OTP'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setOtpSent(false); setOtp(''); setForgotMsg(null); }}
+                    className={`text-xs underline underline-offset-2 ${sub}`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
               {forgotMsg && (
                 <p className={`text-xs mt-2 flex items-center justify-center gap-1 ${
                   forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
