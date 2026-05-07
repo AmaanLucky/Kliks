@@ -25,10 +25,10 @@ exports.login = (req, res) => {
 
 // POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res) => {
-  // Always return success to prevent email enumeration probing
   const successMsg = { message: 'Password sent to your registered email.' };
+  console.log('forgotPassword: GMAIL_USER=', process.env.GMAIL_USER, 'ADMIN_EMAIL=', process.env.ADMIN_EMAIL);
   try {
-    await mailer.sendMail({
+    const info = await mailer.sendMail({
       from: `"Kliks Admin" <${process.env.GMAIL_USER}>`,
       to:   process.env.ADMIN_EMAIL,
       subject: 'Kliks Admin — Your Password',
@@ -43,6 +43,7 @@ exports.forgotPassword = async (req, res) => {
         </div>
       `,
     });
+    console.log('Email sent:', info.messageId, 'accepted:', info.accepted);
   } catch (err) {
     console.error('Forgot-password email failed:', err.message);
   }
