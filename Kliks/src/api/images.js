@@ -32,3 +32,10 @@ export const verifyOtp = (otp) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ otp }),
   }).then(r => r.json());
+
+export const resetPassword = (resetToken, newPassword) =>
+  fetch(`${BASE}/api/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ resetToken, newPassword }),
+  }).then(r => r.json());

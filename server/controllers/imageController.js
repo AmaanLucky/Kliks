@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const Image = require('../models/Image');
+const Admin = require('../models/Admin');
 const imagekit = require('../utils/imagekit');
 const mailer = require('../utils/mailer');
 
@@ -9,29 +10,25 @@ exports.upload = upload.single('image');
 
 const PAGE_SIZE = 20;
 
-// In-memory OTP store: { otp -> expiresAt }
 const otpStore = new Map();
-
 const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 // POST /api/auth/login
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const { username, password } = req.body;
-  if (
-    username !== process.env.ADMIN_USERNAME ||
-    password !== process.env.ADMIN_PASSWORD
-  ) {
+  const admin = await Admin.findOne({ username });
+  if (!admin || admin.password !== password) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1d' });
   res.json({ token });
 };
 
-// POST /api/auth/forgot-password — send OTP
+// POST /api/auth/forgot-password — generate OTP and email it
 exports.forgotPassword = async (req, res) => {
-  otpStore.clear(); // invalidate any previous OTPs
+  otpStore.clear();
   const otp = generateOtp();
-  otpStore.set(otp, Date.now() + 10 * 60 * 1000); // expires in 10 min
+  otpStore.set(otp, Date.now() + 10 * 60 * 1000);
 
   try {
     await mailer.sendMail({
@@ -41,7 +38,7 @@ exports.forgotPassword = async (req, res) => {
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:auto;">
           <h2 style="margin-bottom:8px;">Kliks Admin</h2>
-          <p style="color:#555;">Use this OTP to retrieve your password. It expires in 10 minutes.</p>
+          <p style="color:#555;">Use this OTP to reset your password. It expires in 10 minutes.</p>
           <div style="background:#f4f4f4;padding:16px 20px;border-radius:8px;font-size:32px;letter-spacing:8px;font-weight:bold;margin:16px 0;text-align:center;">
             ${otp}
           </div>
@@ -56,7 +53,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// POST /api/auth/verify-otp — verify OTP and email the password
+// POST /api/auth/verify-otp — verify OTP, return a short-lived reset token
 exports.verifyOtp = async (req, res) => {
   const { otp } = req.body;
   if (!otp) return res.status(400).json({ error: 'OTP is required.' });
@@ -67,29 +64,31 @@ exports.verifyOtp = async (req, res) => {
     return res.status(400).json({ error: 'Invalid or expired OTP.' });
   }
 
-  otpStore.delete(otp); // one-time use
+  otpStore.delete(otp);
+  const resetToken = jwt.sign({ type: 'password-reset' }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  res.json({ resetToken });
+};
+
+// POST /api/auth/reset-password — validate reset token, update password in DB
+exports.resetPassword = async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+  if (!resetToken || !newPassword) return res.status(400).json({ error: 'Missing fields.' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters.' });
 
   try {
-    await mailer.sendMail({
-      from: 'Kliks Admin <onboarding@resend.dev>',
-      to: process.env.ADMIN_EMAIL,
-      subject: 'Kliks Admin — Your Password',
-      html: `
-        <div style="font-family:sans-serif;max-width:480px;margin:auto;">
-          <h2 style="margin-bottom:8px;">Kliks Admin</h2>
-          <p style="color:#555;">OTP verified. Here is your admin password:</p>
-          <div style="background:#f4f4f4;padding:16px 20px;border-radius:8px;font-size:20px;letter-spacing:2px;font-weight:bold;margin:16px 0;">
-            ${process.env.ADMIN_PASSWORD}
-          </div>
-          <p style="color:#999;font-size:12px;">Keep this safe.</p>
-        </div>
-      `,
-    });
-    res.json({ message: 'Password sent to your registered email.' });
-  } catch (err) {
-    console.error('Password email failed:', err.message);
-    res.status(500).json({ error: 'OTP verified but failed to send password email.' });
+    const payload = jwt.verify(resetToken, process.env.JWT_SECRET);
+    if (payload.type !== 'password-reset') throw new Error('Invalid token type');
+  } catch {
+    return res.status(400).json({ error: 'Reset session is invalid or expired. Please request a new OTP.' });
   }
+
+  const admin = await Admin.findOne({ username: process.env.ADMIN_USERNAME });
+  if (!admin) return res.status(500).json({ error: 'Admin not found.' });
+
+  admin.password = newPassword;
+  await admin.save();
+
+  res.json({ message: 'Password updated successfully.' });
 };
 
 // GET /api/images?page=1

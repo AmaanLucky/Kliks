@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Upload, Trash2, LogOut, LogIn, CheckCircle, AlertCircle, Loader, X } from 'lucide-react';
-import { login, uploadImage, deleteImage, getImages, forgotPassword, verifyOtp } from '../api/images';
+import { login, uploadImage, deleteImage, getImages, forgotPassword, verifyOtp, resetPassword } from '../api/images';
 
 const TOKEN_KEY = 'kliks_admin_token';
 
 const AdminPage = ({ darkMode }) => {
-  const [token, setToken]           = useState(() => localStorage.getItem(TOKEN_KEY));
-  const [password, setPassword]         = useState('');
-  const [loginError, setLoginError]     = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [forgotMsg, setForgotMsg]         = useState(null); // { type: 'success'|'error', text }
+  const [token, setToken]                 = useState(() => localStorage.getItem(TOKEN_KEY));
+  const [password, setPassword]           = useState('');
+  const [loginError, setLoginError]       = useState('');
+  const [loginLoading, setLoginLoading]   = useState(false);
+  const [loginToast, setLoginToast]       = useState('');
+
+  const [forgotMsg, setForgotMsg]         = useState(null);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [otpSent, setOtpSent]             = useState(false);
   const [otp, setOtp]                     = useState('');
   const [otpLoading, setOtpLoading]       = useState(false);
+
+  const [resetToken, setResetToken]       = useState('');
+  const [resetStep, setResetStep]         = useState('otp'); // 'otp' | 'reset'
+  const [newPassword, setNewPassword]     = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetLoading, setResetLoading]   = useState(false);
 
   const [title, setTitle]         = useState('');
   const [file, setFile]           = useState(null);
@@ -92,14 +100,43 @@ const AdminPage = ({ darkMode }) => {
       if (data.error) {
         setForgotMsg({ type: 'error', text: data.error });
       } else {
-        setOtpSent(false);
-        setOtp('');
-        setForgotMsg({ type: 'success', text: 'Password sent to your email.' });
+        setResetToken(data.resetToken);
+        setResetStep('reset');
+        setForgotMsg(null);
       }
     } catch {
       setForgotMsg({ type: 'error', text: 'Verification failed. Try again.' });
     } finally {
       setOtpLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (newPassword !== confirmPassword)
+      return setForgotMsg({ type: 'error', text: 'Passwords do not match.' });
+    if (newPassword.length < 6)
+      return setForgotMsg({ type: 'error', text: 'Password must be at least 6 characters.' });
+
+    setResetLoading(true);
+    setForgotMsg(null);
+    try {
+      const data = await resetPassword(resetToken, newPassword);
+      if (data.error) {
+        setForgotMsg({ type: 'error', text: data.error });
+      } else {
+        setOtpSent(false);
+        setOtp('');
+        setResetToken('');
+        setResetStep('otp');
+        setNewPassword('');
+        setConfirmPassword('');
+        setForgotMsg(null);
+        setLoginToast('Password updated successfully. Please login with your new password.');
+      }
+    } catch {
+      setForgotMsg({ type: 'error', text: 'Reset failed. Try again.' });
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -172,6 +209,12 @@ const AdminPage = ({ darkMode }) => {
             <p className={`text-sm ${sub}`}>Enter your password to continue</p>
           </div>
 
+          {loginToast && (
+            <p className="text-green-600 text-xs text-center flex items-center justify-center gap-1 mb-4 px-2">
+              <CheckCircle className="h-3 w-3 flex-shrink-0" /> {loginToast}
+            </p>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="password"
@@ -221,59 +264,102 @@ const AdminPage = ({ darkMode }) => {
           </form>
         </div>
 
-        {/* ─── OTP Modal ─────────────────────────────────────────────────────── */}
+        {/* ─── OTP / Reset Password Modal ──────────────────────────────────── */}
         {otpSent && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
           >
             <div className={`w-full max-w-xs rounded-2xl border shadow-2xl p-8 ${card}`}>
-              <div className="flex flex-col items-center gap-1 mb-6">
-                <Camera className={`h-8 w-8 ${text}`} />
-                <h2 className={`text-lg font-bold ${text}`}>Enter OTP</h2>
-                <p className={`text-xs text-center ${sub}`}>A 6-digit code was sent to your registered email. It expires in 10 minutes.</p>
-              </div>
 
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="— — — — — —"
-                  maxLength={6}
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                  autoFocus
-                  className={`w-full px-4 py-3 rounded-lg border text-lg outline-none transition-colors text-center tracking-[0.5em] font-bold ${input}`}
-                />
+              {resetStep === 'otp' ? (
+                <>
+                  <div className="flex flex-col items-center gap-1 mb-6">
+                    <Camera className={`h-8 w-8 ${text}`} />
+                    <h2 className={`text-lg font-bold ${text}`}>Enter OTP</h2>
+                    <p className={`text-xs text-center ${sub}`}>A 6-digit code was sent to your email. Expires in 10 minutes.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="— — — — — —"
+                      maxLength={6}
+                      value={otp}
+                      onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                      autoFocus
+                      className={`w-full px-4 py-3 rounded-lg border text-lg outline-none transition-colors text-center tracking-[0.5em] font-bold ${input}`}
+                    />
+                    {forgotMsg && (
+                      <p className={`text-xs flex items-center justify-center gap-1 ${forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                        {forgotMsg.type === 'success' ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <AlertCircle className="h-3 w-3 flex-shrink-0" />}
+                        {forgotMsg.text}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleVerifyOtp}
+                      disabled={otpLoading || otp.length !== 6}
+                      className="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
+                    >
+                      {otpLoading ? <><Loader className="h-4 w-4 animate-spin inline mr-1" />Verifying…</> : 'Verify OTP'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setOtp(''); setForgotMsg(null); setResetStep('otp'); }}
+                      className={`w-full text-xs py-1 underline underline-offset-2 ${sub}`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col items-center gap-1 mb-6">
+                    <Camera className={`h-8 w-8 ${text}`} />
+                    <h2 className={`text-lg font-bold ${text}`}>Reset Password</h2>
+                    <p className={`text-xs text-center ${sub}`}>OTP verified. Set your new password.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <input
+                      type="password"
+                      placeholder="New password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      autoFocus
+                      className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-colors ${input}`}
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-colors ${input}`}
+                    />
+                    {forgotMsg && (
+                      <p className={`text-xs flex items-center justify-center gap-1 ${forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                        {forgotMsg.type === 'success' ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <AlertCircle className="h-3 w-3 flex-shrink-0" />}
+                        {forgotMsg.text}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleResetPassword}
+                      disabled={resetLoading || !newPassword || !confirmPassword}
+                      className="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
+                    >
+                      {resetLoading ? <><Loader className="h-4 w-4 animate-spin inline mr-1" />Saving…</> : 'Save New Password'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setResetStep('otp'); setOtp(''); setNewPassword(''); setConfirmPassword(''); setForgotMsg(null); }}
+                      className={`w-full text-xs py-1 underline underline-offset-2 ${sub}`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )}
 
-                {forgotMsg && (
-                  <p className={`text-xs flex items-center justify-center gap-1 ${
-                    forgotMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    {forgotMsg.type === 'success'
-                      ? <CheckCircle className="h-3 w-3 flex-shrink-0" />
-                      : <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                    }
-                    {forgotMsg.text}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleVerifyOtp}
-                  disabled={otpLoading || otp.length !== 6}
-                  className="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60"
-                >
-                  {otpLoading ? <><Loader className="h-4 w-4 animate-spin inline mr-1" />Verifying…</> : 'Verify OTP'}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { setOtpSent(false); setOtp(''); setForgotMsg(null); }}
-                  className={`w-full text-xs py-1 underline underline-offset-2 ${sub}`}
-                >
-                  Cancel
-                </button>
-              </div>
             </div>
           </div>
         )}

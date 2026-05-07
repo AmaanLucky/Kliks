@@ -15,6 +15,11 @@ router.post('/auth/verify-otp', async (req, res) => {
   catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.post('/auth/reset-password', async (req, res) => {
+  try { await ctrl.resetPassword(req, res); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 router.get('/images', async (req, res) => {
   try { await ctrl.getImages(req, res); }
   catch (err) { res.status(500).json({ error: err.message }); }
