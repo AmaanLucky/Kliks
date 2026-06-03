@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const Image = require('../models/Image');
 const Admin = require('../models/Admin');
+const Session = require('../models/Session');
 const imagekit = require('../utils/imagekit');
 const mailer = require('../utils/mailer');
 
@@ -20,7 +21,9 @@ exports.login = async (req, res) => {
   if (!admin || admin.password !== password) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  const session = await Session.create({ adminId: admin._id, ip: req.ip, userAgent: req.get('User-Agent') });
+
+  const token = jwt.sign({ username, jti: session._id.toString() }, process.env.JWT_SECRET, { expiresIn: '15m' });
   res.json({ token });
 };
 
@@ -86,9 +89,34 @@ exports.resetPassword = async (req, res) => {
   if (!admin) return res.status(500).json({ error: 'Admin not found.' });
 
   admin.password = newPassword;
+  admin.passwordChangedAt = new Date();
   await admin.save();
 
+  // invalidate all sessions for this admin
+  try {
+    await Session.updateMany({ adminId: admin._id }, { valid: false });
+  } catch (err) { console.error('Failed to invalidate sessions:', err.message); }
+
   res.json({ message: 'Password updated successfully.' });
+};
+
+// POST /api/auth/logout
+exports.logout = async (req, res) => {
+  // token may be in Authorization header or body.token (for keepalive sends)
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : (req.body && req.body.token);
+  if (!token) return res.status(400).json({ error: 'No token provided' });
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.jti) {
+      await Session.findByIdAndUpdate(payload.jti, { valid: false });
+    }
+  } catch {
+    // ignore invalid tokens
+  }
+
+  res.json({ message: 'Logged out' });
 };
 
 // GET /api/images?page=1

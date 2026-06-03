@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Upload, Trash2, LogOut, LogIn, CheckCircle, AlertCircle, Loader, X } from 'lucide-react';
-import { login, uploadImage, deleteImage, getImages, forgotPassword, verifyOtp, resetPassword } from '../api/images';
+import { login, uploadImage, deleteImage, getImages, forgotPassword, verifyOtp, resetPassword, logout as apiLogout } from '../api/images';
 
 const TOKEN_KEY = 'kliks_admin_token';
 
@@ -10,6 +10,7 @@ const AdminPage = ({ darkMode }) => {
   const [loginError, setLoginError]       = useState('');
   const [loginLoading, setLoginLoading]   = useState(false);
   const [loginToast, setLoginToast]       = useState('');
+  const [pwChangedMsg, setPwChangedMsg]  = useState(null);
 
   const [forgotMsg, setForgotMsg]         = useState(null);
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -141,10 +142,37 @@ const AdminPage = ({ darkMode }) => {
   };
 
   const handleLogout = () => {
+    try { if (token) apiLogout(token); } catch {}
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setImages([]);
   };
+
+  useEffect(() => {
+    const handleUnload = () => {
+      if (!token) return;
+      const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const url = `${BASE}/api/auth/logout`;
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify({ token })], { type: 'application/json' });
+          navigator.sendBeacon(url, blob);
+        } else {
+          fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({}), keepalive: true });
+        }
+      } catch (e) {}
+    };
+    window.addEventListener('unload', handleUnload);
+    return () => window.removeEventListener('unload', handleUnload);
+  }, [token]);
+
+  useEffect(() => {
+    const onPwChanged = (e) => {
+      setPwChangedMsg(e && e.detail ? e.detail : 'The password has been changed. Relogin to access the page');
+    };
+    window.addEventListener('auth:password-changed', onPwChanged);
+    return () => window.removeEventListener('auth:password-changed', onPwChanged);
+  }, []);
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -363,6 +391,21 @@ const AdminPage = ({ darkMode }) => {
             </div>
           </div>
         )}
+      </div>
+    );
+  }
+
+  // Password-changed modal
+  if (pwChangedMsg) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+        <div className={`w-full max-w-md rounded-2xl border p-6 ${card}`}>
+          <h2 className={`text-lg font-bold mb-2 ${text}`}>Session Updated</h2>
+          <p className={`text-sm mb-6 ${sub}`}>{pwChangedMsg}</p>
+          <div className="flex gap-3">
+            <button onClick={() => { setPwChangedMsg(null); handleLogout(); }} className="flex-1 py-2.5 rounded-xl bg-black text-white font-semibold">Relogin</button>
+          </div>
+        </div>
       </div>
     );
   }
